@@ -10,6 +10,7 @@ MY_PATH=$(pwd)
 export CC=${CC:=gcc}
 export FC=${FC:=gfortran}
 export CXX=${CXX:=g++}
+export BUILD_DIR=${BUILD_DIR:=build}
 export BLAS_VENDOR=${BLAS_VENDOR:=OpenBLAS}
 export BML_OPENMP=${BML_OPENMP:=yes}
 export INSTALL_DIR=${INSTALL_DIR:="${MY_PATH}/install"}
@@ -30,7 +31,7 @@ fi
 
 ./build.sh configure
 
-pushd build
+pushd ${BUILD_DIR}
 make -j8
 make install
 popd
