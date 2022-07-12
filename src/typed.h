@@ -47,12 +47,12 @@
 #define bml_cusparsePruneCSRNnz cusparseSpruneCsr2csrNnz
 #define bml_cusparsePruneCSR cusparseSpruneCsr2csr
 #elif defined (BML_USE_ROCSPARSE)
-#define BML_ROCSPARSE_T HIP_R_32F
+#define BML_ROCSPARSE_T rocsparse_datatype_f32_r
 #define bml_rocsparse_csrgeam_buffer_size rocsparse_scsrgeam_buffer_size 
 #define bml_rocsparse_csrgeam rocsparse_scsrgeam
-#define bml_rocsparse_sprune_csr2csr_buffer_size rocsparse_sprune_csr2csr_buffer_size
-#define bml_rocsparse_prune_csr2csr_nnz rocsparse_sprune_csr2csr_nnz
-#define bml_rocsparse_prune_csr2csr rocsparse_sprune_csr2csr
+#define bml_rocsparse_xprune_csr2csr_buffer_size rocsparse_sprune_csr2csr_buffer_size
+#define bml_rocsparse_xprune_csr2csr_nnz rocsparse_sprune_csr2csr_nnz
+#define bml_rocsparse_xprune_csr2csr rocsparse_sprune_csr2csr
 #endif
 #elif defined(DOUBLE_REAL)
 #define REAL_T double
@@ -84,12 +84,12 @@
 #define bml_cusparsePruneCSRNnz cusparseDpruneCsr2csrNnz
 #define bml_cusparsePruneCSR cusparseDpruneCsr2csr
 #elif defined (BML_USE_ROCSPARSE)
-#define BML_ROCSPARSE_T HIP_R_64F
+#define BML_ROCSPARSE_T rocsparse_datatype_f64_r
 #define bml_rocsparse_csrgeam_buffer_size rocsparse_dcsrgeam_buffer_size 
 #define bml_rocsparse_csrgeam rocsparse_dcsrgeam
-#define bml_rocsparse_sprune_csr2csr_buffer_size rocsparse_dprune_csr2csr_buffer_size
-#define bml_rocsparse_prune_csr2csr_nnz rocsparse_dprune_csr2csr_nnz
-#define bml_rocsparse_prune_csr2csr rocsparse_dprune_csr2csr
+#define bml_rocsparse_xprune_csr2csr_buffer_size rocsparse_dprune_csr2csr_buffer_size
+#define bml_rocsparse_xprune_csr2csr_nnz rocsparse_dprune_csr2csr_nnz
+#define bml_rocsparse_xprune_csr2csr rocsparse_dprune_csr2csr
 #endif
 #elif defined(SINGLE_COMPLEX)
 #define REAL_T float _Complex
@@ -122,12 +122,12 @@
 #define bml_cusparsePruneCSRNnz cusparseCpruneCsr2csrNnz
 #define bml_cusparsePruneCSR cusparseCpruneCsr2csr
 #elif defined (BML_USE_ROCSPARSE)
-#define BML_ROCSPARSE_T HIP_C_32F
+#define BML_ROCSPARSE_T rocsparse_datatype_f32_c
 #define bml_rocsparse_csrgeam_buffer_size rocsparse_ccsrgeam_buffer_size 
 #define bml_rocsparse_csrgeam rocsparse_ccsrgeam
-#define bml_rocsparse_sprune_csr2csr_buffer_size rocsparse_cprune_csr2csr_buffer_size
-#define bml_rocsparse_prune_csr2csr_nnz rocsparse_cprune_csr2csr_nnz
-#define bml_rocsparse_prune_csr2csr rocsparse_cprune_csr2csr
+#define bml_rocsparse_xprune_csr2csr_buffer_size rocsparse_cprune_csr2csr_buffer_size
+#define bml_rocsparse_xprune_csr2csr_nnz rocsparse_cprune_csr2csr_nnz
+#define bml_rocsparse_xprune_csr2csr rocsparse_cprune_csr2csr
 #endif
 #elif defined(DOUBLE_COMPLEX)
 #define REAL_T double _Complex
@@ -160,12 +160,12 @@
 #define bml_cusparsePruneCSRNnz cusparseZpruneCsr2csrNnz
 #define bml_cusparsePruneCSR cusparseZpruneCsr2csr
 #elif defined (BML_USE_ROCSPARSE)
-#define BML_ROCSPARSE_T HIP_C_64F
+#define BML_ROCSPARSE_T rocsparse_datatype_f64_c
 #define bml_rocsparse_csrgeam_buffer_size rocsparse_zcsrgeam_buffer_size 
 #define bml_rocsparse_csrgeam rocsparse_zcsrgeam
-#define bml_rocsparse_sprune_csr2csr_buffer_size rocsparse_zprune_csr2csr_buffer_size
-#define bml_rocsparse_prune_csr2csr_nnz rocsparse_zprune_csr2csr_nnz
-#define bml_rocsparse_prune_csr2csr rocsparse_zprune_csr2csr
+#define bml_rocsparse_xprune_csr2csr_buffer_size rocsparse_zprune_csr2csr_buffer_size
+#define bml_rocsparse_xprune_csr2csr_nnz rocsparse_zprune_csr2csr_nnz
+#define bml_rocsparse_xprune_csr2csr rocsparse_zprune_csr2csr
 #endif
 #else
 #error Unknown precision type
