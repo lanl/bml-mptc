@@ -28,7 +28,7 @@
 #endif
 #ifdef BML_USE_ROCSPARSE
 #include "bml_trace_ellpack.h"
-#include <rocsparse/rocsparse.h>
+#include "../rocsparse/rocsparse.h"
 #include <hip/hip_runtime.h>
 #endif
 
