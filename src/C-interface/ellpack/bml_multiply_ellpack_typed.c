@@ -878,6 +878,19 @@ void TYPED_FUNC(
 				 rocsparse_indextype_i32,
 				 rocsparse_index_base_zero,
 				 computeType));
+	    csrRowPtrC_tmp = (int *)omp_target_alloc(sizeof(int)*(C_N+1),
+						     omp_get_default_device());
+	    csrColIndC_tmp = (int *)omp_target_alloc(sizeof(int)*1,
+						     omp_get_default_device());
+	    csrValC_tmp = (REAL_T *)omp_target_alloc(sizeof(REAL_T)*1,
+						     omp_get_default_device());
+	    BML_CHECK_ROCSPARSE(rocsparse_create_csr_descr
+				(&matC_tmp, C_N, C_N, 0, csrRowPtrC_tmp,
+				 csrColIndC_tmp, csrValC_tmp,
+				 rocsparse_indextype_i32,
+				 rocsparse_indextype_i32,
+				 rocsparse_index_base_zero,
+				 computeType));
 #endif	    
         }
         // SpGEMM Computation
@@ -902,9 +915,15 @@ void TYPED_FUNC(
 					     rocsparse_spgemm_stage_buffer_size,
 					     &bufferSize1, NULL));
 	hipDeviceSynchronize();
+	int64_t C_num_rows, C_num_cols, C_nnz_tmp;
+	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+                               (matC, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+	printf("C_nnz_tmp = %ld\n",C_nnz_tmp);
 #endif
+	printf("bufferSize1 = %ld\n",bufferSize1);
         dBuffer1 =
             (void *) omp_target_alloc(bufferSize1, omp_get_default_device());
+	printf("dBuffer1 = %ld\n",dBuffer1);
 #if defined(BML_USE_CUSPARSE)
 	// inspect the matrices A and B to understand the memory requirement fo\
 r
@@ -952,9 +971,14 @@ r
                                                CUSPARSE_SPGEMM_DEFAULT,
                                                spgemmDesc));
 #elif defined(BML_USE_ROCSPARSE)
-	int64_t C_num_rows, C_num_cols, C_nnz_tmp;
 	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
-                               (matC, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+			    (matA, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+			    (matB, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+			    (matC, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+			    (matC_tmp, &C_num_rows, &C_num_cols, &C_nnz_tmp));
 	// Compute # nonzero elements nnz for the output matrix C
         BML_CHECK_ROCSPARSE(rocsparse_spgemm(handle, opA, opB,
 					     &alpha, matA, matB,
@@ -962,22 +986,23 @@ r
 					     computeType,
 					     rocsparse_spgemm_alg_default,
                                              rocsparse_spgemm_stage_nnz,
-					     &C_nnz_tmp,
+					     &bufferSize1,
 					     dBuffer1));
+	BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+			    (matC_tmp, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+	//	printf("C_nnz_tmp = %ld\n",C_nnz_tmp);
+        omp_target_free(csrRowPtrC_tmp, omp_get_default_device());
+        omp_target_free(csrColIndC_tmp, omp_get_default_device());
+        omp_target_free(csrValC_tmp, omp_get_default_device());
 	csrRowPtrC_tmp = (int *)omp_target_alloc(sizeof(int)*(C_num_rows+1),
 						 omp_get_default_device());
 	csrColIndC_tmp = (int *)omp_target_alloc(sizeof(int)*C_nnz_tmp,
 						 omp_get_default_device());
 	csrValC_tmp = (REAL_T *)omp_target_alloc(sizeof(REAL_T)*C_nnz_tmp,
 						 omp_get_default_device());
-	BML_CHECK_ROCSPARSE(rocsparse_create_csr_descr
-			    (&matC_tmp, C_num_rows, C_num_cols, C_nnz_tmp, csrRowPtrC_tmp,
-			     csrColIndC_tmp, csrValC_tmp,
-			     rocsparse_indextype_i32,
-			     rocsparse_indextype_i32,
-			     rocsparse_index_base_zero,
-			     computeType));
 	
+	BML_CHECK_ROCSPARSE(rocsparse_csr_set_pointers
+                               (matC_tmp, csrRowPtrC_tmp, csrColIndC_tmp, csrValC_tmp));
         // Perform the computation
         BML_CHECK_ROCSPARSE(rocsparse_spgemm(handle, opA, opB,
 					     &alpha, matA, matB,
@@ -992,6 +1017,7 @@ r
         // Note: cusparse has either cusparse<t>pruneCsr2csr or cusparse<t>csr2csr_compress to
         // accomplish this. We use cusparse<t>pruneCsr2csr here for convenience.
         // Prune allows the use of device pointers, whereas Compress works with managed memory.
+	printf("threshold, BML_REAL_MIN = %f, %f\n",threshold, BML_REAL_MIN);
         if (is_above_threshold(threshold, BML_REAL_MIN))
         {
             int nnzC = 0;
@@ -1083,6 +1109,12 @@ r
 				     csrRowPtrC_tmp, csrColIndC_tmp, &threshold,
 				     matC, csrValC, csrRowPtrC, csrColIndC,
 				     dwork));
+		BML_CHECK_ROCSPARSE(rocsparse_spmat_get_size
+				    (matC, &C_num_rows, &C_num_cols, &C_nnz_tmp));
+		printf("C_nnz_tmp = %ld\n",C_nnz_tmp);
+		omp_target_free(csrRowPtrC_tmp, omp_get_default_device());
+		omp_target_free(csrColIndC_tmp, omp_get_default_device());
+		omp_target_free(csrValC_tmp, omp_get_default_device());
 	    }
 #endif // BML_USE_CUSPARSE
         }
