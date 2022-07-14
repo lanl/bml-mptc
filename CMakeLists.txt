@@ -324,6 +324,15 @@ endif()
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
+if(BML_MPTC)
+   if(NOT BML_MAGMA)
+   message(FATAL_ERROR "Turn on MAGMA to use Tensor core matrix square")
+   endif()
+   message(STATUS "Will use Tensor core matrix square")
+   add_definitions(-DBML_MPTC)
+endif()
+
+
 if(BML_MAGMA)
   message(STATUS "Search for MAGMA...")
   find_package(MAGMA)

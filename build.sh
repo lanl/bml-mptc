@@ -82,6 +82,7 @@ EOF
     echo "BML_OFFLOAD_ARCH       {NVIDIA, AMD}               (default is ${BML_OFFLOAD_ARCH})"
     echo "GPU_ARCH               GPU architecture            (default is ${GPU_ARCH})"
     echo "BML_CUDA               Build with CUDA             (default is ${BML_CUDA})"
+    echo "BML_MPTC               Build with Tensor Core multiply (default is ${BML_MPTC})"
     echo "BML_MAGMA              Build with MAGMA            (default is ${BML_MAGMA})"
     echo "BML_CUSOLVER           Build with cuSOLVER         (default is ${BML_CUSOLVER})"
     echo "BML_CUSPARSE           Build with cuSPARSE         (default is ${BML_CUSPARSE})"
@@ -131,6 +132,7 @@ set_defaults() {
     : ${BML_OFFLOAD_ARCH:=NVIDIA}
     : ${GPU_ARCH:=}
     : ${BML_CUDA:=no}
+    : ${BML_MPTC:=no}
     : ${BML_MAGMA:=no}
     : ${BML_CUSOLVER:=no}
     : ${BML_CUSPARSE:=no}
@@ -239,6 +241,7 @@ configure() {
         -DBML_OFFLOAD_ARCH="${BML_OFFLOAD_ARCH}" \
         -DGPU_ARCH="${GPU_ARCH}" \
         -DBML_CUDA="${BML_CUDA}" \
+        -DBML_MPTC="${BML_MPTC}" \
         -DBML_MAGMA="${BML_MAGMA}" \
         -DBML_CUSOLVER="${BML_CUSOLVER}" \
         -DBML_CUSPARSE="${BML_CUSPARSE}" \

@@ -23,7 +23,8 @@ set(HEADERS-DENSE
   bml_transpose_dense.h
   bml_transpose_triangle_dense.h
   bml_types_dense.h
-  bml_utilities_dense.h)
+  bml_utilities_dense.h
+  bml_mptc_dense.cuh)
 
 set(SOURCES-DENSE
   bml_add_dense.c
@@ -49,7 +50,8 @@ set(SOURCES-DENSE
   bml_trace_dense.c
   bml_transpose_dense.c
   bml_transpose_triangle_dense.c
-  bml_utilities_dense.c)
+  bml_utilities_dense.c
+  bml_mptc_dense.cu)
 
 add_library(bml-dense OBJECT ${SOURCES-DENSE})
 set_target_properties(bml-dense
@@ -89,10 +91,8 @@ set(SOURCES-DENSE-TYPED
 include(${PROJECT_SOURCE_DIR}/cmake/bmlAddTypedLibrary.cmake)
 bml_add_typed_library(bml-dense single_real "${SOURCES-DENSE-TYPED}")
 bml_add_typed_library(bml-dense double_real "${SOURCES-DENSE-TYPED}")
-if(BML_COMPLEX)
-  bml_add_typed_library(bml-dense single_complex "${SOURCES-DENSE-TYPED}")
-  bml_add_typed_library(bml-dense double_complex "${SOURCES-DENSE-TYPED}")
-endif()
+bml_add_typed_library(bml-dense single_complex "${SOURCES-DENSE-TYPED}")
+bml_add_typed_library(bml-dense double_complex "${SOURCES-DENSE-TYPED}")
 if(OPENMP_FOUND)
   set_target_properties(bml-dense-single_real
     PROPERTIES
@@ -100,12 +100,13 @@ if(OPENMP_FOUND)
   set_target_properties(bml-dense-double_real
     PROPERTIES
     COMPILE_FLAGS ${OpenMP_C_FLAGS})
-  if(BML_COMPLEX)
-    set_target_properties(bml-dense-single_complex
-      PROPERTIES
-      COMPILE_FLAGS ${OpenMP_C_FLAGS})
-    set_target_properties(bml-dense-double_complex
-      PROPERTIES
-      COMPILE_FLAGS ${OpenMP_C_FLAGS})
-  endif()
+  set_target_properties(bml-dense-single_complex
+    PROPERTIES
+    COMPILE_FLAGS ${OpenMP_C_FLAGS})
+  set_target_properties(bml-dense-double_complex
+    PROPERTIES
+    COMPILE_FLAGS ${OpenMP_C_FLAGS})
 endif()
+
+
+
